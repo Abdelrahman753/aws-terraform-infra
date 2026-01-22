@@ -1,0 +1,48 @@
+---
+- hosts: web
+  become: true
+  gather_facts: false
+  vars:
+    ansible_ssh_extra_args: "-o ConnectTimeout=10 -o StrictHostKeyChecking=no"
+    ansible_connection_attempts: 3
+    ansible_connection_retries: 3
+
+  tasks:
+    - name: Wait for system to be ready
+      wait_for_connection:
+        delay: 10
+        timeout: 300
+
+    - name: update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      retries: 3
+      delay: 5
+      register: apt_result
+      until: apt_result is succeeded
+
+    - name: install apache
+      apt:
+        name: apache2
+        state: present
+      retries: 3
+      delay: 5
+      register: install_result
+      until: install_result is succeeded
+
+    - name: start apache
+      service:
+        name: apache2
+        state: started
+        enabled: true
+      retries: 3
+      delay: 5
+
+    - name: create hello world
+      copy:
+        dest: /var/www/html/index.html
+        content: "Hello World from Ansible"
+        owner: www-data
+        group: www-data
+        mode: '0644'
