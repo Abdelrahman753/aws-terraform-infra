@@ -37,7 +37,7 @@ The infrastructure supports multi-environment deployments (development, producti
 ---
 
 ## 🏗️ Architecture
-![Architecture Diagram](diagram.drawio.svg)
+![Architecture Diagram](asset/diagram.drawio.svg)
 
 The diagram below illustrates the high-level AWS infrastructure and how the modules relate:
 
